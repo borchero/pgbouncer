@@ -12,15 +12,14 @@ jobs:
       - setup_remote_docker
       - run: |
           docker build \
-            -t ghcr.io/borchero/pgbouncer:latest \
-            -f build/docker/server.Dockerfile .
+            -t ghcr.io/borchero/pgbouncer:latest .
       - run: |
           docker tag \
             ghcr.io/borchero/pgbouncer:latest \
             ghcr.io/borchero/pgbouncer:${CIRCLE_TAG}
       - run: echo $DOCKER_PASSWORD | docker login ghcr.io -u $DOCKER_USERNAME --password-stdin
-      - run: docker push ghcr.io/borchero/meerkat/server:latest
-      - run: docker push ghcr.io/borchero/meerkat/server:${CIRCLE_TAG}
+      - run: docker push ghcr.io/borchero/pgbouncer:latest
+      - run: docker push ghcr.io/borchero/pgbouncer:${CIRCLE_TAG}
 
 workflows:
   version: 2
