@@ -3,7 +3,7 @@
 set -ex
 
 if [ "$PGUSER" = "postgres" ]; then
-    echo "WARNING: pgbouncer will connect with a superuser privileges!"
+    echo "WARNING: pgbouncer will connect with superuser privileges!"
     echo "You need to fix this as soon as possible."
 fi
 
@@ -15,6 +15,14 @@ else
     ln ${CONNECTION_POOLER_CLIENT_TLS_CRT} /etc/ssl/certs/pgbouncer.crt
     ln ${CONNECTION_POOLER_CLIENT_TLS_KEY} /etc/ssl/certs/pgbouncer.key
 fi
+
+export CONNECTION_POOLER_DEFAULT_POOL_SIZE=${CONNECTION_POOLER_DEFAULT_POOL_SIZE:-1}
+export CONNECTION_POOLER_MIN_POOL_SIZE=${CONNECTION_POOLER_MIN_POOL_SIZE:-0}
+export CONNECTION_POOLER_RESERVE_POOL_SIZE=${CONNECTION_POOLER_RESERVE_POOL_SIZE:-0}
+export CONNECTION_POOLER_MAX_CLIENT_CONN=${CONNECTION_POOLER_MAX_CLIENT_CONN:-10000}
+export CONNECTION_POOLER_MAX_DB_CONN=${CONNECTION_POOLER_MAX_DB_CONN:-0}
+export CONNECTION_POOLER_MAX_USER_CONN=${CONNECTION_POOLER_MAX_USER_CONN:-5}
+export CONNECTION_POOLER_QUERY_WAIT_TIMEOUT=${CONNECTION_POOLER_QUERY_WAIT_TIMEOUT:-30}
 
 envsubst < /etc/pgbouncer/pgbouncer.ini.tmpl > /etc/pgbouncer/pgbouncer.ini
 envsubst < /etc/pgbouncer/auth_file.txt.tmpl > /etc/pgbouncer/auth_file.txt

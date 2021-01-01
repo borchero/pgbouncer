@@ -1,0 +1,34 @@
+version: 2.1
+executors:
+  docker:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
+jobs:
+  deploy-image:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          docker build \
+            -t ghcr.io/borchero/pgbouncer:latest \
+            -f build/docker/server.Dockerfile .
+      - run: |
+          docker tag \
+            ghcr.io/borchero/pgbouncer:latest \
+            ghcr.io/borchero/pgbouncer:${CIRCLE_TAG}
+      - run: echo $DOCKER_PASSWORD | docker login ghcr.io -u $DOCKER_USERNAME --password-stdin
+      - run: docker push ghcr.io/borchero/meerkat/server:latest
+      - run: docker push ghcr.io/borchero/meerkat/server:${CIRCLE_TAG}
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy-image:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
